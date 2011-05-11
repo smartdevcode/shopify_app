@@ -10,7 +10,7 @@ module ShopifyApp::LoginProtection
       end
     else
       session[:return_to] = request.fullpath
-      redirect_to login_path
+      redirect_to :controller => 'login'
     end
   end
   
