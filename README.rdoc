@@ -38,6 +38,33 @@ visiting https://YOUR-SHOP.myshopify.com/admin/api
 
 This will create a LoginController and a HomeController with their own views.
 
+
+== Set your required API permissions
+
+Before making API requests, your application must state which API permissions it requires from the shop it's installed in. These requested permissions will be listed on the screen the merchant sees when approving your app to be installed in their shop.
+
+Start by reviewing the documentation on API permission scopes: http://api.shopify.com/authentication.html
+
+When you know which ones your app will need, add a scope line to the `config/initializers/omniauth.rb` file.
+
+=== Example
+
+Make this change to request write access to products and read access to orders:
+
+    Rails.application.config.middleware.use OmniAuth::Builder do
+        provider :shopify, 
+           ShopifyApp.configuration.api_key, 
+           ShopifyApp.configuration.secret,
+           :scope => "write_products,read_orders",
+           :setup => lambda {|env| 
+                       params = Rack::Utils.parse_query(env['QUERY_STRING'])
+                       site_url = "https://#{params['shop']}"
+                       env['omniauth.strategy'].options[:client_options][:site] = site_url
+                     }
+    end
+
+(Note that you can change your API permission scopes on the fly, but the merchant will have to approve each change and your computed API password will change.)
+
 == After running the generator
 
 First, start your application:
@@ -46,7 +73,7 @@ First, start your application:
 
 Now visit http://localhost:3000 and install your application in a Shopify store.
 
-After your application has been given read or read/write API permission by the
+After your application has been given whatever API permissions you requested by the
 shop, you're ready to start experimenting with the Shopify API.
 
 == Rails 3.0 Support
