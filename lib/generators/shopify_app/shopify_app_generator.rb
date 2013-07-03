@@ -34,10 +34,8 @@ class ShopifyAppGenerator < Rails::Generators::Base
   end
 
   def add_bootstrap_gem
-    gem_group :development, :test do
-      gem "less-rails-bootstrap"
-      gem 'therubyracer', :platforms => :ruby
-    end
+    insert_into_file "Gemfile", "\ngem 'less-rails-bootstrap'\n\n", :before => '# Gems used only for assets and not required'
+    insert_into_file "Gemfile", "\ngem 'therubyracer', :platforms => :ruby\n\n", :before => 'end'
   end
   
   def add_routes
@@ -49,8 +47,8 @@ class ShopifyAppGenerator < Rails::Generators::Base
       route_without_newline "  post 'login' => :create"
       route_without_newline "  get 'login' => :new"
       route_without_newline "controller :sessions do"
-      route "get 'design' => 'home#design'"
-      route_without_newline "get 'welcome' => 'home#welcome'"
+      route "match 'design' => 'home#design'"
+      route_without_newline "match 'welcome' => 'home#welcome'"
     end
   end
   
