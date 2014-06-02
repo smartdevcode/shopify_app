@@ -1,5 +1,7 @@
 # Shopify App
 
+![build status](https://travis-ci.org/Shopify/shopify_app.svg?branch=master)
+
 Shopify application generator for Rails 3.1 and Rails 4.0
 
 ## Description
@@ -71,20 +73,6 @@ common:
   api_key: your api key
   secret: your secret
 ```
-
-## Set up your ShopifySessionRepository.store
-
-`ShopifySessionRepository` allows you as a developer to define how your sessions are retrieved and
-stored for a shop. This can simply be your `Shop` model that stores the API Token and shop name. If
-you are using ActiveRecord, then all you need to implement is `self.store(shopify_session)` that
-converts that data into a record on disk.
-
-By default you will have an in memory store but it really won't work on multi-server environments since
-they won't be sharing the static data that would be required in case your user gets directed to a
-different server by your load balancer.
-
-Changing the `ShopifySessionRepository.store` can simply be done by editings
-`config/initializers/shopify_session_repository.rb` to use the correct model.
 
 ## Set your required API permissions
 

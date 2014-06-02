@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class ConfigurationTest < Minitest::Test
+class ConfigurationTest < MiniTest::Unit::TestCase
   def setup
     Rails.stubs(:env).returns('development')
     Rails.stubs(:root).returns(File.expand_path('../..', File.dirname(__FILE__)))
