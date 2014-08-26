@@ -93,7 +93,7 @@ class Shop < ActiveRecord::Base
     shop.id
   end
 
-  def self.retrieve(id)
+  def retrieve(id)
     shop = Shop.find(id)
     ShopifyAPI::Session.new(shop.domain, shop.token)
   end
