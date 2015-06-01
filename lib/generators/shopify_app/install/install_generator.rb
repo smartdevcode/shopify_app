@@ -11,7 +11,17 @@ module ShopifyApp
       def initialize(args, *options)
         @opts = Hash[options.first.join(' ').scan(/--?([^=\s]+)(?:=(\S+))?/)]
         @opts = @opts.with_indifferent_access
+        @opts.reverse_merge!(defaults)
         super(args, *options)
+      end
+
+      def defaults
+        {
+          api_key: '<api_key>',
+          secret: '<secret>',
+          scope: 'read_orders, read_products',
+          embedded: 'true'
+        }
       end
 
       def create_shopify_app_initializer
@@ -70,6 +80,7 @@ module ShopifyApp
       end
 
       def add_home_index_route
+        route "mount ShopifyApp::Engine, at: '/'"
         route "root :to => 'home#index'"
       end
 

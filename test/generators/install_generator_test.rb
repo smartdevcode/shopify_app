@@ -22,6 +22,15 @@ class InstallGeneratorTest < Rails::Generators::TestCase
     end
   end
 
+  test "creates the ShopifyApp initializer for non embedded app" do
+    stub_embedded_false
+    run_generator
+
+    assert_file "config/initializers/shopify_app.rb" do |shopify_app|
+      assert_match "config.embedded_app = false", shopify_app
+    end
+  end
+
   test "creats and injects into omniauth initializer" do
     run_generator
     assert_file "config/initializers/omniauth.rb" do |omniauth|
@@ -85,9 +94,10 @@ class InstallGeneratorTest < Rails::Generators::TestCase
     end
   end
 
-  test "adds home route to routes" do
+  test "adds engine and home route to routes" do
     run_generator
     assert_file "config/routes.rb" do |routes|
+      assert_match "mount ShopifyApp::Engine, at: '/'", routes
       assert_match "root :to => 'home#index'", routes
     end
   end
