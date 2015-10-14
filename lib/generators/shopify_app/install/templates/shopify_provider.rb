@@ -4,6 +4,4 @@
 
     :redirect_uri => ShopifyApp.configuration.redirect_uri,
 
-    :callback_url => ShopifyApp.configuration.redirect_uri,
-
     :scope => ShopifyApp.configuration.scope
