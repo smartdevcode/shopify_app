@@ -25,9 +25,19 @@ If you don't have a Shopify Partner account yet head over to http://shopify.com/
 
 Once you have a Partner account create a new application to get an Api key and other Api credentials. To create a development application set the Application Callback URL to
 
-	http://localhost:3000/login
+```
+http://localhost:3000/login
+```
+
+and the `redirect_uri` to
+
+```
+http://localhost:3000/auth/shopify/callback
+```
 
 This way you'll be able to run the app on your local machine.
+
+Also note, ShopifyApp creates embedded apps by default, so remember to check `enabled` for the embedded settings.
 
 
 Installation
@@ -107,38 +117,6 @@ ShopifyApp.configure do |config|
   config.embedded_app = true
 end
 ```
-
-
-WebhooksManager
----------------
-
-ShopifyApp can manage your app's webhooks for you (requires ActiveJob). Set which webhooks you require in the initializer:
-
-```ruby
-ShopifyApp.configure do |config|
-  config.webhooks = [
-    {topic: 'carts/update', address: 'example-app.com/webhooks'}
-  ]
-end
-```
-
-When the oauth callback is completed successfully ShopifyApp will queue a background job which will ensure all the specified webhooks exist for that shop. Because this runs on every oauth callback it means your app will always have the webhooks it needs even if the user uninstalls and re-installs the app.
-
-There is also a WebhooksController module that you can include in a controller that receives Shopify webhooks. For example:
-
-```ruby
-class WebhooksController < ApplicationController
-  include ShopifyApp::WebhooksController
-
-  def carts_update
-    SomeJob.perform_later(shopify_domain: shop_domain)
-    head :ok
-  end
-end
-```
-
-The module skips the `verify_authenticity_token` before_action and adds an action to verify that the webhook came from Shopify.
-
 
 ShopifyApp::SessionRepository
 -----------------------------
