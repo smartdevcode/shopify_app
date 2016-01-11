@@ -1,4 +1,4 @@
-module GeneratorTestHelpers
+class ActiveSupport::TestCase
   TEMPLATE_PATH = File.expand_path("../../app_templates", __FILE__)
 
   def provide_existing_application_controller
