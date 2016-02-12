@@ -1,8 +1,3 @@
-Unreleased
-----------
-* rename WebhooksController module to WebhookVerification
-* added a webhooks_controller which automatically delegates to jobs
-
 6.4.2
 -----
 

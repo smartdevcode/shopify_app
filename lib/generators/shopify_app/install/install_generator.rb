@@ -67,9 +67,6 @@ module ShopifyApp
         end
       end
 
-      def mount_engine
-        route "mount ShopifyApp::Engine, at: '/'"
-      end
 
       private
 

@@ -2,17 +2,18 @@ require 'test_helper'
 require 'action_controller'
 require 'action_controller/base'
 
-class WebhookVerificationController < ActionController::Base
-  include ShopifyApp::WebhookVerification
+class WebhooksController < ActionController::Base
+  include ShopifyApp::WebhooksController
   def carts_update
     head :ok
   end
 end
 
-class WebhookVerificationTest < ActionController::TestCase
-  tests WebhookVerificationController
+class WebhooksControllerTest < ActionController::TestCase
+  tests WebhooksController
 
   setup do
+    ShopifyApp::SessionRepository.storage = InMemorySessionStore
     ShopifyApp.configure do |config|
       config.secret = 'secret'
     end
@@ -44,7 +45,7 @@ class WebhookVerificationTest < ActionController::TestCase
   def with_application_test_routes
     with_routing do |set|
       set.draw do
-        get '/carts_update' => 'webhook_verification#carts_update'
+        get '/carts_update' => 'webhooks#carts_update'
       end
       yield
     end

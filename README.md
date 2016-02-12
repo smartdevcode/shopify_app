@@ -61,15 +61,6 @@ Now we are ready to run any of the shopify_app generators. The following section
 Generators
 ----------
 
-### Default Generator
-
-The default generator will run the `install`, `shop`, and `home_controller` generators. This is the recommended way to start your app.
-
-```sh
-$ rails generate shopify_app -api_key=<your_api_key> -secret=<your_app_secret>
-```
-
-
 ### Install Generator
 
 ```sh
@@ -102,19 +93,15 @@ The install generator doesn't create any database models for you and if you are 
 
 *Note that you will need to run rake db:migrate after this generator*
 
-
-### Home Controller Generator
-
-```sh
-$ rails generate shopify_app:home_controller
-```
-
-This generator creates an example home controller and view which fetches and displays products using the ShopifyAPI
-
-
 ### Controllers, Routes and Views
 
-The last group of generators are for your convenience if you want to start overriding code included as part of the Rails engine. For example by default the engine provides a simple SessionController, if you run the `rails generate shopify_app:controllers` generator then this code gets copied out into your app so you can start adding to it. Routes and views follow the exact same pattern.
+The last group of generators are for your convenience when you want to start overriding code included as part of the Rails engine. For example by default the engine provides a simple SessionController, if you run the `rails generate shopify_app:controllers` generator then this code gets copied out into your app so you can start adding to it. Routes and views follow the exact same pattern.
+
+
+### Default Generator
+
+If you just run `rails generate shopify_app` then all the generators will be run for you. This is how we do it internally!
+
 
 
 Managing Api Keys
@@ -141,20 +128,18 @@ ShopifyApp can manage your app's webhooks for you by setting which webhooks you 
 ```ruby
 ShopifyApp.configure do |config|
   config.webhooks = [
-    {topic: 'carts/update', address: 'example-app.com/webhooks/carts_update'}
+    {topic: 'carts/update', address: 'example-app.com/webhooks'}
   ]
 end
 ```
 
 When the oauth callback is completed successfully ShopifyApp will queue a background job which will ensure all the specified webhooks exist for that shop. Because this runs on every oauth callback it means your app will always have the webhooks it needs even if the user uninstalls and re-installs the app.
 
-ShopifyApp also provides a WebhooksController that receives webhooks and queues a job based on the webhook url. For example if you register the webhook from above then all you need to do is create a job called `CartsUpdateJob`. The job will be queued with 2 params `shop_domain` and `webhook` which is the webhook body.
-
-If you'd rather implement your own controller then you'll want to use the WebhookVerfication module to verify your webhooks:
+There is also a WebhooksController module that you can include in a controller that receives Shopify webhooks. For example:
 
 ```ruby
-class CustomWebhooksController < ApplicationController
-  include ShopifyApp::WebhookVerification
+class WebhooksController < ApplicationController
+  include ShopifyApp::WebhooksController
 
   def carts_update
     SomeJob.perform_later(shopify_domain: shop_domain)

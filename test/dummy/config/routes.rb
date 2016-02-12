@@ -7,8 +7,4 @@ Rails.application.routes.draw do
     get 'auth/shopify/callback' => :callback
     get 'logout' => :destroy, :as => :logout
   end
-
-  namespace :webhooks do
-    post ':type' => :receive
-  end
 end

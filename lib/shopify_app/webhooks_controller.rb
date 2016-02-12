@@ -1,5 +1,5 @@
 module ShopifyApp
-  module WebhookVerification
+  module WebhooksController
     extend ActiveSupport::Concern
 
     included do
@@ -10,7 +10,9 @@ module ShopifyApp
     private
 
     def verify_request
-      data = request.raw_post
+      request.body.rewind
+      data = request.body.read
+
       return head :unauthorized unless hmac_valid?(data)
     end
 
