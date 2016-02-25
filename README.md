@@ -6,7 +6,7 @@ Shopify Application Rails engine and generator
 
 Description
 -----------
-This gem includes some common code and generators for writing Rails applications using the Shopify API.
+This gem includes a Rails Engine and generators for writing Rails applications using the Shopify API. The Engine provides a SessionsController and all the required code for authenticating with a shop.
 
 The [example](https://github.com/Shopify/shopify_app/tree/master/example) directory contains an app that was generated with this gem. It also contains sample code demonstrating the usage of the embedded app sdk.
 
@@ -63,6 +63,15 @@ Now we are ready to run any of the shopify_app generators. The following section
 Generators
 ----------
 
+### Default Generator
+
+The default generator will run the `install`, `shop`, and `home_controller` generators. This is the recommended way to start your app.
+
+```sh
+$ rails generate shopify_app -api_key=<your_api_key> -secret=<your_app_secret>
+```
+
+
 ### Install Generator
 
 ```sh
@@ -80,7 +89,7 @@ Other options include:
 
 You can update any of these settings later on easily, the arguments are simply for convenience.
 
-The generator creates a basic SessionsController for authenticating with your shop and a HomeController which displays basic information about your products using the ShopifyAPI. The generated controllers include concerns provided by this gem - in this way code sharing is possible and if some of these core methods are updated everyone can benefit. It is completely safe to override any of the methods provided by this gem in your application.
+The generator adds ShopifyApp and the required initializers to the host Rails application.
 
 After running the `install` generator, you can start your app with `bundle exec rails server` and install your app by visiting localhost.
 
@@ -95,15 +104,19 @@ The install generator doesn't create any database models for you and if you are 
 
 *Note that you will need to run rake db:migrate after this generator*
 
+
+### Home Controller Generator
+
+```sh
+$ rails generate shopify_app:home_controller
+```
+
+This generator creates an example home controller and view which fetches and displays products using the ShopifyAPI
+
+
 ### Controllers, Routes and Views
 
-The last group of generators are for your convenience when you want to start overriding code included as part of the Rails engine. For example by default the engine provides a simple SessionController, if you run the `rails generate shopify_app:controllers` generator then this code gets copied out into your app so you can start adding to it. Routes and views follow the exact same pattern.
-
-
-### Default Generator
-
-If you just run `rails generate shopify_app` then all the generators will be run for you. This is how we do it internally!
-
+The last group of generators are for your convenience if you want to start overriding code included as part of the Rails engine. For example by default the engine provides a simple SessionController, if you run the `rails generate shopify_app:controllers` generator then this code gets copied out into your app so you can start adding to it. Routes and views follow the exact same pattern.
 
 
 Managing Api Keys
@@ -130,18 +143,20 @@ ShopifyApp can manage your app's webhooks for you by setting which webhooks you 
 ```ruby
 ShopifyApp.configure do |config|
   config.webhooks = [
-    {topic: 'carts/update', address: 'example-app.com/webhooks'}
+    {topic: 'carts/update', address: 'example-app.com/webhooks/carts_update'}
   ]
 end
 ```
 
 When the oauth callback is completed successfully ShopifyApp will queue a background job which will ensure all the specified webhooks exist for that shop. Because this runs on every oauth callback it means your app will always have the webhooks it needs even if the user uninstalls and re-installs the app.
 
-There is also a WebhooksController module that you can include in a controller that receives Shopify webhooks. For example:
+ShopifyApp also provides a WebhooksController that receives webhooks and queues a job based on the webhook url. For example if you register the webhook from above then all you need to do is create a job called `CartsUpdateJob`. The job will be queued with 2 params `shop_domain` and `webhook` which is the webhook body.
+
+If you'd rather implement your own controller then you'll want to use the WebhookVerfication module to verify your webhooks:
 
 ```ruby
-class WebhooksController < ApplicationController
-  include ShopifyApp::WebhooksController
+class CustomWebhooksController < ApplicationController
+  include ShopifyApp::WebhookVerification
 
   def carts_update
     SomeJob.perform_later(shopify_domain: shop_domain)
@@ -165,7 +180,7 @@ If you only run the install generator then by default you will have an in memory
 AuthenticatedController
 -----------------------
 
-The engine includes a controller called `AuthenticatedController` which inherits from `ApplicationController`. It adds some before_filters which ensure the user is authenticated and will redirect to the login page if not. It is best practice to have all controllers that belong to the Shopify part of your app inherit from this controller. The HomeController that is generated already inherits from AuthenticatedController.
+The engine includes a controller called `ShopifyApp::AuthenticatedController` which inherits from `ApplicationController`. It adds some before_filters which ensure the user is authenticated and will redirect to the login page if not. It is best practice to have all controllers that belong to the Shopify part of your app inherit from this controller. The HomeController that is generated already inherits from AuthenticatedController.
 
 Troubleshooting
 ---------------
