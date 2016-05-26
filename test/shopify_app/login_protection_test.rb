@@ -16,10 +16,6 @@ class LoginProtectionController < ActionController::Base
   def second_login
     render nothing: true
   end
-
-  def raise_unauthorized
-    raise ActiveResource::UnauthorizedAccess.new('unauthorized')
-  end
 end
 
 class LoginProtectionTest < ActionController::TestCase
@@ -90,13 +86,6 @@ class LoginProtectionTest < ActionController::TestCase
     end
   end
 
-  test '#shopify_session when rescuing from unauthorized access, redirects to the login url' do
-    with_application_test_routes do
-      get :raise_unauthorized, shop: 'foobar'
-      assert_redirected_to @controller.send(:main_or_engine_login_url, shop: 'foobar')
-    end
-  end
-
   private
 
   def with_application_test_routes
@@ -104,7 +93,6 @@ class LoginProtectionTest < ActionController::TestCase
       set.draw do
         get '/' => 'login_protection#index'
         get '/second_login' => 'login_protection#second_login'
-        get '/raise_unauthorized' => 'login_protection#raise_unauthorized'
       end
       yield
     end
