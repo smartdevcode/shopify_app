@@ -1,5 +1,5 @@
 module ShopifyApp
-  class AuthenticatedController < ActionController::Base
+  class AuthenticatedController < ApplicationController
     include ShopifyApp::Localization
     include ShopifyApp::LoginProtection
 
