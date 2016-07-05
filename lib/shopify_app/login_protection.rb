@@ -46,7 +46,7 @@ module ShopifyApp
     def close_session
       session[:shopify] = nil
       session[:shopify_domain] = nil
-      redirect_to_with_fallback main_or_engine_login_url(shop: params[:shop])
+      redirect_to_with_fallback login_url
     end
 
     def main_or_engine_login_url(params = {})
@@ -64,6 +64,7 @@ module ShopifyApp
         <html lang="en">
           <head>
             <meta charset="utf-8" />
+            <meta http-equiv="refresh" content="1; url=#{url_json_no_quotes}">
             <title>Redirecting…</title>
             <script type="text/javascript">
               window.location.href = #{url_json};
@@ -85,6 +86,7 @@ module ShopifyApp
           <html lang="en">
             <head>
               <meta charset="utf-8" />
+              <meta http-equiv="refresh" content="1; url=#{url_json_no_quotes}">
               <base target="_top">
               <title>Redirecting…</title>
               <script type="text/javascript">
