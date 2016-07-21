@@ -2,10 +2,6 @@ module ShopifyApp
   module SessionsConcern
     extend ActiveSupport::Concern
 
-    included do
-      include ShopifyApp::LoginProtection
-    end
-
     def new
       authenticate if params[:shop].present?
     end
