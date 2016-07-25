@@ -7,15 +7,15 @@ Shopify App
 
 
 Shopify Application Rails engine and generator
- 
-  
+
+
 Table of Contents
 -----------------
 * [**Description**](#description)
 * [**Quickstart**](#quickstart)
 * [**Becoming a Shopify App Developer**](#becoming-a-shopify-app-developer)
 * [**Installation**](#installation)
-* [**Rails 5**](#rails-5)
+  * [Rails 5](#rails-5)
 * [**Generators**](#generators)
  * [Default Generator](#default-generator)
  * [Install Generator](#install-generator)
@@ -177,6 +177,7 @@ The `install` generator places your Api credentials directly into the shopify_ap
 
 ```ruby
 ShopifyApp.configure do |config|
+  config.application_name = 'Your app name' # Optional
   config.api_key = ENV['SHOPIFY_CLIENT_API_KEY']
   config.secret = ENV['SHOPIFY_CLIENT_API_SECRET']
   config.scope = 'read_customers, read_orders, write_products'
@@ -262,7 +263,7 @@ The engine provides a mixin for verifying incoming HTTP requests sent via an App
 ### Recommended Usage
 
 The App Proxy Controller Generator automatically adds the mixin to the generated app_proxy_controller.rb
-Additional controllers for resources within the App_Proxy namespace, will need to include the mixin like so: 
+Additional controllers for resources within the App_Proxy namespace, will need to include the mixin like so:
 
 ```ruby
 # app/controllers/app_proxy/reviews_controller.rb
@@ -302,6 +303,7 @@ App Tunneling
 
 For certain features like Application Proxy or Webhooks to receive requests from Shopify, your app needs to be on a publicly visible URL. This can be a hurdle during development or testing on a local machine. Fortunately, this can be overcome by employing a tunneling service like [Forward](https://forwardhq.com/), [RequestBin](requestb.in/), [ngrok](https://ngrok.com/) etc. These tools allow you to create a secure tunnel from the public Internet to your local machine.
 
+Tunneling is also useful for working the the embedded app sdk to solve mixed content issues since most tunnles provide ssl.
 
 Questions or problems?
 ----------------------
