@@ -1,40 +1,7 @@
-Shopify App
+Shopify App      [![Build Status](https://travis-ci.org/Shopify/shopify_app.png)](https://travis-ci.org/Shopify/shopify_app)
 ===========
-[![Version][gem]][gem_url] [![Build Status](https://travis-ci.org/Shopify/shopify_app.png)](https://travis-ci.org/Shopify/shopify_app)
-
-[gem]: https://img.shields.io/gem/v/shopify_app.svg
-[gem_url]: https://rubygems.org/gems/shopify_app
-
 
 Shopify Application Rails engine and generator
-
-
-Table of Contents
------------------
-* [**Description**](#description)
-* [**Quickstart**](#quickstart)
-* [**Becoming a Shopify App Developer**](#becoming-a-shopify-app-developer)
-* [**Installation**](#installation)
-  * [Rails 5](#rails-5)
-* [**Generators**](#generators)
- * [Default Generator](#default-generator)
- * [Install Generator](#install-generator)
- * [Shop Model Generator](#shop-model-generator)
- * [Home Controller Generator](#home-controller-generator)
- * [App Proxy Controller Generator](#app-proxy-controller-generator)
- * [Controllers, Routes and Views](#controllers-routes-and-views)
-* [**Managing Api Keys**](#managing-api-keys)
-* [**WebhooksManager**](#webhooksmanager)
-* [**ScripttagsManager**](#scripttagsmanager)
-* [**ShopifyApp::SessionRepository**](#shopifyappsessionrepository)
-* [**AuthenticatedController**](#authenticatedcontroller)
-* [**AppProxyVerification**](#appproxyverification)
- * [Recommended Usage](#recommended-usage)
-* [**Troubleshooting**](#troubleshooting)
- * [Generator shopify_app:install hangs](#generator-shopify_appinstall-hangs)
-* [**Testing an embedded app outside the Shopify admin**](#testing-an-embedded-app-outside-the-shopify-admin)
-* [**App Tunneling**](#app-tunneling)
-* [**Questions or problems?**](#questions-or-problems)
 
 
 Description
@@ -93,16 +60,6 @@ $ bundle install
 Now we are ready to run any of the shopify_app generators. The following section explains the generators and what they can do.
 
 
-#### Rails 5
-
-shopify_app is compatible with Rails 5 but since the latest ActiveResource release (4.1) is locked on Rails 4.x, you'll need to use the unreleased master version:
-
-```ruby
-gem 'shopify_app'
-gem 'activeresource', github: 'rails/activeresource'
-```
-
-
 Generators
 ----------
 
@@ -156,15 +113,6 @@ $ rails generate shopify_app:home_controller
 This generator creates an example home controller and view which fetches and displays products using the ShopifyAPI
 
 
-### App Proxy Controller Generator
-
-```sh
-$ rails generate shopify_app:app_proxy_controller
-```
-
-This optional generator, not included with the default generator, creates the app proxy controller to handle proxy requests to the app from your shop storefront, modifies 'config/routes.rb' with a namespace route, and an example view which displays current shop information using the LiquidAPI
-
-
 ### Controllers, Routes and Views
 
 The last group of generators are for your convenience if you want to start overriding code included as part of the Rails engine. For example by default the engine provides a simple SessionController, if you run the `rails generate shopify_app:controllers` generator then this code gets copied out into your app so you can start adding to it. Routes and views follow the exact same pattern.
@@ -177,7 +125,6 @@ The `install` generator places your Api credentials directly into the shopify_ap
 
 ```ruby
 ShopifyApp.configure do |config|
-  config.application_name = 'Your app name' # Optional
   config.api_key = ENV['SHOPIFY_CLIENT_API_KEY']
   config.secret = ENV['SHOPIFY_CLIENT_API_SECRET']
   config.scope = 'read_customers, read_orders, write_products'
@@ -262,18 +209,43 @@ The engine provides a mixin for verifying incoming HTTP requests sent via an App
 
 ### Recommended Usage
 
-The App Proxy Controller Generator automatically adds the mixin to the generated app_proxy_controller.rb
-Additional controllers for resources within the App_Proxy namespace, will need to include the mixin like so:
+1. Use the `namespace` method to create app proxy routes
+    ```ruby
+    # config/routes.rb
+    namespace :app_proxy do
+      # simple routes without a specified controller will go to AppProxyController
+      # GET '/app_proxy/basic' will be routed to AppProxyController#basic
+      get :basic
 
-```ruby
-# app/controllers/app_proxy/reviews_controller.rb
-class ReviewsController < ApplicationController
-  include ShopifyApp::AppProxyVerification
-  # ...
-end
-```
+      # this will route GET /app_proxy to AppProxyController#main
+      root action: :main
 
-Create your app proxy url in the [Shopify Partners' Dashboard](https://app.shopify.com/services/partners/api_clients), making sure to point it to `https://your_app_website.com/app_proxy`.
+      # more complex routes will go to controllers in the AppProxy namespace
+      resources :reviews
+      # GET /app_proxy/reviews will now be routed to
+      # AppProxy::ReviewsController#index, for example
+    end
+    ```
+
+2. `include` the mixin in your app proxy controllers
+    ```ruby
+    # app/controllers/app_proxy_controller.rb
+    class AppProxyController < ApplicationController
+      include ShopifyApp::AppProxyVerification
+
+      def basic
+        render text: 'Signature verification passed!'
+      end
+    end
+
+    # app/controllers/app_proxy/reviews_controller.rb
+    class ReviewsController < ApplicationController
+      include ShopifyApp::AppProxyVerification
+      # ...
+    end
+    ```
+
+3. Create your app proxy url in the [Shopify Partners' Dashboard](https://app.shopify.com/services/partners/api_clients), making sure to point it to `https://your_app_website.com/app_proxy`.
 ![Creating an App Proxy](/images/app-proxy-screenshot.png)
 
 Troubleshooting
@@ -297,13 +269,6 @@ By default, loading your embedded app will redirect to the Shopify admin, with t
 ```javascript
 forceRedirect: <%= Rails.env.development? || Rails.env.test? ? 'false' : 'true' %>
 ```
-
-App Tunneling
--------------
-
-For certain features like Application Proxy or Webhooks to receive requests from Shopify, your app needs to be on a publicly visible URL. This can be a hurdle during development or testing on a local machine. Fortunately, this can be overcome by employing a tunneling service like [Forward](https://forwardhq.com/), [RequestBin](requestb.in/), [ngrok](https://ngrok.com/) etc. These tools allow you to create a secure tunnel from the public Internet to your local machine.
-
-Tunneling is also useful for working the the embedded app sdk to solve mixed content issues since most tunnles provide ssl.
 
 Questions or problems?
 ----------------------

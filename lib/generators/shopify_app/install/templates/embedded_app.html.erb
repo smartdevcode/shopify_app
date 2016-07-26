@@ -4,7 +4,6 @@
     <meta charset="utf-8" />
     <title>Shopify Embedded Example App</title>
     <%= stylesheet_link_tag 'application' %>
-    <%= javascript_include_tag 'application', "data-turbolinks-track" => true %>
     <%= csrf_meta_tags %>
   </head>
 
@@ -29,6 +28,8 @@
         forceRedirect: true
       });
     </script>
+
+    <%= javascript_include_tag 'application', "data-turbolinks-track" => true %>
 
     <% if content_for?(:javascript) %>
       <div id="ContentForJavascript" data-turbolinks-temporary>

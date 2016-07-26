@@ -4,7 +4,6 @@ module ShopifyApp
     # Shopify App settings. These values should match the configuration
     # for the app in your Shopify Partners page. Change your settings in
     # `config/initializers/shopify_app.rb`
-    attr_accessor :application_name
     attr_accessor :api_key
     attr_accessor :secret
     attr_accessor :scope
@@ -33,11 +32,11 @@ module ShopifyApp
     end
 
     def scripttags_manager_queue_name
-      @scripttags_manager_queue_name ||= :default
+      @scripttags_manager_queue_name ||= Rails.application.config.active_job.queue_name
     end
 
     def webhooks_manager_queue_name
-      @webhooks_manager_queue_name ||= :default
+      @webhooks_manager_queue_name ||= Rails.application.config.active_job.queue_name
     end
   end
 
