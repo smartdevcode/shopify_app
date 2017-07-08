@@ -31,6 +31,7 @@ class LoginProtectionTest < ActionController::TestCase
 
   setup do
     ShopifyApp::SessionRepository.storage = InMemorySessionStore
+    ShopifyApp.configuration.embedded_app = true
   end
 
   test "#shop_session returns nil when session is nil" do
@@ -134,6 +135,8 @@ class LoginProtectionTest < ActionController::TestCase
       get :redirect
       assert_redirected_to 'https://example.com'
     end
+
+    ShopifyApp.configuration.embedded_app = true
   end
 
   private

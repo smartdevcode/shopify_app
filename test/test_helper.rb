@@ -14,9 +14,4 @@ Dir["#{File.dirname(__FILE__)}/support/**/*.rb"].each {|f| require f}
 
 class ActiveSupport::TestCase
   include GeneratorTestHelpers
-
-  def before_setup
-    super
-    ShopifyAppConfigurer.call
-  end
 end
