@@ -1,3 +1,8 @@
+8.2.0
+-----
+* Add `webhook_jobs_namespace` config option. [[#463]](https://github.com/Shopify/shopify_app/pull/463)
+* Updates login page styles to match the [Polaris](https://polaris.shopify.com/) design system. [[#474]](https://github.com/Shopify/shopify_app/pull/474)
+
 8.1.0
 -----
 * Add support for per_user_authentication
