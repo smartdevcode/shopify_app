@@ -235,7 +235,7 @@ ShopifyApp.configure do |config|
   config.application_name = 'Your app name' # Optional
   config.api_key = ENV['SHOPIFY_CLIENT_API_KEY']
   config.secret = ENV['SHOPIFY_CLIENT_API_SECRET']
-  config.scope = 'read_customers, write_products'
+  config.scope = 'read_customers, read_orders, write_products'
   config.embedded_app = true
 end
 ```
@@ -316,7 +316,7 @@ As with webhooks, ShopifyApp can manage your app's scripttags for you by setting
 ```ruby
 ShopifyApp.configure do |config|
   config.scripttags = [
-    {event:'onload', src: 'https://my-shopifyapp.herokuapp.com/fancy.js'}
+    {event:'onload', src: 'https://my-shopifyapp.herokuapp.com/fancy.js'},
     {event:'onload', src: ->(domain) { dynamic_tag_url(domain) } }
   ]
 end
