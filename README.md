@@ -209,16 +209,6 @@ provider :shopify,
   callback_path: '/nested/auth/shopify/callback'
 ```
 
-### Custom login URL
-
-While you can customize the login view by creating a `/app/views/shopify_app/sessions/new.html.erb` file, you may also want to customize the URL entirely. You can modify your `shopify_app.rb` initializer to provide a custom `login_url` e.g.:
-
-```ruby
-ShopifyApp.configure do |config|
-  config.login_url = 'https://my.domain.com/nested/login'
-end
-```
-
 Per User Authentication
 -----------------------
 To enable per user authentication you need to update the `omniauth.rb` initializer:
@@ -326,7 +316,7 @@ As with webhooks, ShopifyApp can manage your app's scripttags for you by setting
 ```ruby
 ShopifyApp.configure do |config|
   config.scripttags = [
-    {event:'onload', src: 'https://my-shopifyapp.herokuapp.com/fancy.js'},
+    {event:'onload', src: 'https://my-shopifyapp.herokuapp.com/fancy.js'}
     {event:'onload', src: ->(domain) { dynamic_tag_url(domain) } }
   ]
 end

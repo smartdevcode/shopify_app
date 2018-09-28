@@ -17,7 +17,6 @@ module ShopifyApp
 
     # customise urls
     attr_accessor :root_url
-    attr_accessor :login_url
 
     # customise ActiveJob queue names
     attr_accessor :scripttags_manager_queue_name
@@ -37,7 +36,7 @@ module ShopifyApp
     end
 
     def login_url
-      @login_url || File.join(@root_url, 'login')
+      File.join(@root_url, 'login')
     end
 
     def session_repository=(klass)
