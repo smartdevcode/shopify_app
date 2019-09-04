@@ -45,14 +45,8 @@ module ShopifyApp
         head :unauthorized
       else
         if request.get?
-          path = request.path
-          query = sanitized_params.to_query
-        else
-          referer = URI(request.referer || "/")
-          path = referer.path
-          query = "#{referer.query}&#{sanitized_params.to_query}"
+          session[:return_to] = "#{request.path}?#{sanitized_params.to_query}"
         end
-        session[:return_to] = "#{path}?#{query}"
         redirect_to(login_url_with_optional_shop)
       end
     end
