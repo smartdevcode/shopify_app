@@ -3,7 +3,11 @@
 class MarketingActivitiesController < ShopifyApp::ExtensionVerificationController
   def preload_form_data
     preload_data = {
-      "form_data": {}
+      "form_data": {
+        "budget": {
+          "currency": "USD",
+        }
+      }
     }
     render(json: preload_data, status: :ok)
   end
