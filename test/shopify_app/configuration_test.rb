@@ -151,11 +151,21 @@ class ConfigurationTest < ActiveSupport::TestCase
     assert_equal ShopifyApp::InMemorySessionStore, ShopifyApp::SessionRepository.storage
   end
 
+  test "enable_same_site_none is false in tests" do
+    ShopifyApp.configure do |config|
+      config.embedded_app = true
+      config.enable_same_site_none = true
+    end
+
+    refute ShopifyApp.configuration.enable_same_site_none
+  end
+
   test "enable_same_site_none is true if embedded and enable_same_site_none is nil" do
     ShopifyApp.configure do |config|
       config.embedded_app = true
     end
 
+    Rails.env.expects(:test?).returns(false)
     assert ShopifyApp.configuration.enable_same_site_none
   end
 
@@ -165,6 +175,8 @@ class ConfigurationTest < ActiveSupport::TestCase
       config.enable_same_site_none = false
     end
 
+
+    Rails.env.expects(:test?).returns(false)
     refute ShopifyApp.configuration.enable_same_site_none
   end
 
@@ -173,6 +185,7 @@ class ConfigurationTest < ActiveSupport::TestCase
       config.embedded_app = false
     end
 
+    Rails.env.expects(:test?).returns(false)
     refute ShopifyApp.configuration.enable_same_site_none
   end
 
@@ -182,6 +195,23 @@ class ConfigurationTest < ActiveSupport::TestCase
       config.enable_same_site_none = true
     end
 
+    Rails.env.expects(:test?).returns(false)
     assert ShopifyApp.configuration.enable_same_site_none
+  end
+
+  test "user_token_repository set properly" do
+    class User < ActiveRecord::Base
+      include ShopifyApp::UserSessionStorage
+    end
+
+    assert_equal ShopifyApp.configuration.user_token_repository, User
+  end
+
+  test "shop_token_repository set properly" do
+    class Shop < ActiveRecord::Base
+      include ShopifyApp::ShopSessionStorage
+    end
+
+    assert_equal ShopifyApp.configuration.shop_token_repository, Shop
   end
 end

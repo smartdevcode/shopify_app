@@ -15,6 +15,8 @@ module ShopifyApp
     attr_accessor :scripttags
     attr_accessor :after_authenticate_job
     attr_reader :session_repository
+    attr_accessor :shop_token_repository
+    attr_accessor :user_token_repository
     attr_accessor :per_user_tokens
     alias_method :per_user_tokens?, :per_user_tokens
     attr_accessor :api_version
@@ -66,7 +68,7 @@ module ShopifyApp
     end
 
     def enable_same_site_none
-      @enable_same_site_none.nil? ? embedded_app? : @enable_same_site_none
+      !Rails.env.test? && (@enable_same_site_none.nil? ? embedded_app? : @enable_same_site_none)
     end
   end
 
