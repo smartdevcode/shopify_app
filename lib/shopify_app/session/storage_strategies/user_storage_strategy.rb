@@ -1,13 +1,6 @@
 module ShopifyApp
-  module UserSessionStorage
-    extend ActiveSupport::Concern
-    include ::ShopifyApp::SessionStorage
-
-    included do
-      validates :shopify_domain, presence: true
-    end
-
-    class_methods do
+  module SessionStorage
+    module UserStorageStrategy
       def store(auth_session, user)
         user = find_or_initialize_by(shopify_user_id: user[:id])
         user.shopify_token = auth_session.token
@@ -18,7 +11,7 @@ module ShopifyApp
 
       def retrieve(id)
         return unless id
-        if user = find_by(shopify_user_id: id)
+        if user = self.find_by(shopify_user_id: id)
           ShopifyAPI::Session.new(
             domain: user.shopify_domain,
             token: user.shopify_token,
