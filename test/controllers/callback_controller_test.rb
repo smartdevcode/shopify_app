@@ -12,7 +12,7 @@ module ShopifyApp
   class CallbackControllerTest < ActionController::TestCase
     setup do
       @routes = ShopifyApp::Engine.routes
-      ShopifyApp::SessionRepository.storage = ShopifyApp::InMemorySessionStore
+      ShopifyApp::SessionRepository.shop_storage = ShopifyApp::InMemoryShopSessionStore
       ShopifyApp.configuration = nil
       ShopifyApp.configuration.embedded_app = true
 
@@ -35,8 +35,9 @@ module ShopifyApp
     test '#callback sets up a shopify session' do
       mock_shopify_omniauth
 
+      ShopifyApp::SessionRepository.expects(:store_shop_session).returns('1234')
       get :callback, params: { shop: 'shop' }
-      assert_not_nil session[:shopify]
+      assert_equal '1234', session[:shop_id]
       assert_equal 'shop.myshopify.com', session[:shopify_domain]
     end
 
@@ -45,24 +46,20 @@ module ShopifyApp
       mock_shopify_omniauth
 
       get :callback, params: { shop: 'shop' }
-      assert_not_nil session[:shopify]
+      assert_not_nil session[:shop_id]
       assert_nil session[:shopify_user]
     end
 
     test '#callback sets up a shopify session with a user for online mode' do
-      begin
-        ShopifyApp.configuration.per_user_tokens = true
-    
-        mock_shopify_user_omniauth
-    
-        get :callback, params: { shop: 'shop' }
-        assert_not_nil session[:shopify]
-        assert_equal 'shop.myshopify.com', session[:shopify_domain]
-        assert_equal 'user_object', session[:shopify_user]
-        assert_equal 'this.is.a.user.session', session[:user_session]
-      ensure
-        ShopifyApp.configuration.per_user_tokens = false
-      end
+      ShopifyApp::SessionRepository.user_storage = ShopifyApp::InMemoryUserSessionStore
+      mock_shopify_user_omniauth
+
+      ShopifyApp::SessionRepository.expects(:store_user_session).returns('4321')
+      get :callback, params: { shop: 'shop' }
+      assert_equal '4321', session[:user_id]
+      assert_equal 'shop.myshopify.com', session[:shopify_domain]
+      assert_equal 'user_object', session[:shopify_user]
+      assert_equal 'this.is.a.user.session', session[:user_session]
     end
 
     test '#callback starts the WebhooksManager if webhooks are configured' do
@@ -168,7 +165,7 @@ module ShopifyApp
         provider: :shopify,
         uid: 'shop.myshopify.com',
         credentials: { token: '1234' },
-        extra: { 
+        extra: {
           associated_user: 'user_object',
           associated_user_scope: "read_products",
           scope: "read_products",
