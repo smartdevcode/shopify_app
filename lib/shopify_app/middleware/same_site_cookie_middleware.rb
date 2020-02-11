@@ -5,7 +5,8 @@ module ShopifyApp
     end
 
     def call(env)
-      status, headers, body = @app.call(env)
+      _status, headers, _body = @app.call(env)
+    ensure
       user_agent = env['HTTP_USER_AGENT']
 
       if headers && headers['Set-Cookie'] && !SameSiteCookieMiddleware.same_site_none_incompatible?(user_agent) &&
@@ -15,11 +16,10 @@ module ShopifyApp
 
         cookies.each do |cookie|
           unless cookie.include?("; SameSite")
-            headers['Set-Cookie'] = headers['Set-Cookie'].gsub(cookie, "#{cookie}; Secure; SameSite=None")
+            headers['Set-Cookie'] = headers['Set-Cookie'].gsub(cookie, "#{cookie}; secure; SameSite=None")
           end
         end
       end
-      [status, headers, body]
     end
 
     def self.same_site_none_incompatible?(user_agent)
