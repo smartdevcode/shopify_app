@@ -14,48 +14,44 @@ module ShopifyApp
       rescue_from ActiveResource::UnauthorizedAccess, :with => :close_session
     end
 
-    def activate_shopify_session
-      return redirect_to_login if current_shopify_session.blank?
+    def shopify_session
+      return redirect_to_login unless shop_session
       clear_top_level_oauth_cookie
 
       begin
-        ShopifyAPI::Base.activate_session(current_shopify_session)
+        ShopifyAPI::Base.activate_session(shop_session)
         yield
       ensure
         ShopifyAPI::Base.clear_session
       end
     end
 
-    def current_shopify_session
-      if session[:user_id].present?
-        @current_shopify_session ||= user_session
-      else
-        @current_shopify_session ||= shop_session
-      end
-    end
-
-    def user_session
-      return if session[:user_id].blank?
-      ShopifyApp::SessionRepository.retrieve_user_session(session[:user_id])
-    end
-
     def shop_session
-      return if session[:shop_id].blank?
-      ShopifyApp::SessionRepository.retrieve_shop_session(session[:shop_id])
+      if ShopifyApp.configuration.per_user_tokens?
+        return unless session[:shopify_user]
+        @shop_session ||= ShopifyApp::SessionRepository.retrieve(session[:shopify_user]['id'])
+      else
+        return unless session[:shopify]
+        @shop_session ||= ShopifyApp::SessionRepository.retrieve(session[:shopify])
+      end
     end
 
     def login_again_if_different_user_or_shop
-      if session[:user_session].present? && params[:session].present? # session data was sent/stored correctly
-        clear_session = session[:user_session] != params[:session] # current user is different from stored user
+      if ShopifyApp.configuration.per_user_tokens?
+        valid_session_data = session[:user_session].present? && params[:session].present? # session data was sent/stored correctly
+        sessions_do_not_match = session[:user_session] != params[:session] # current user is different from stored user
 
+        if valid_session_data && sessions_do_not_match
+          clear_session = true
+        end
       end
 
-      if current_shopify_session && params[:shop] && params[:shop].is_a?(String) && (current_shopify_session.domain != params[:shop])
+      if shop_session && params[:shop] && params[:shop].is_a?(String) && (shop_session.domain != params[:shop])
         clear_session = true
       end
 
       if clear_session
-        clear_shopify_session
+        clear_shop_session
         redirect_to_login
       end
     end
@@ -80,13 +76,12 @@ module ShopifyApp
     end
 
     def close_session
-      clear_shopify_session
+      clear_shop_session
       redirect_to(login_url_with_optional_shop)
     end
 
-    def clear_shopify_session
-      session[:shop_id] = nil
-      session[:user_id] = nil
+    def clear_shop_session
+      session[:shopify] = nil
       session[:shopify_domain] = nil
       session[:shopify_user] = nil
       session[:user_session] = nil
@@ -105,8 +100,10 @@ module ShopifyApp
       query_params = {}
       query_params[:shop] = sanitized_params[:shop] if params[:shop].present?
 
-      if session[:return_to] && return_to_param_required?
-        query_params[:return_to] = session[:return_to]
+      return_to = session[:return_to] || params[:return_to]
+
+      if return_to.present? && return_to_param_required?
+        query_params[:return_to] = return_to
       end
 
       has_referer_shop_name = referer_sanitized_shop_name.present?
@@ -169,6 +166,16 @@ module ShopifyApp
 
     def return_address
       session.delete(:return_to) || ShopifyApp.configuration.root_url
+    end
+
+    def return_address_with_params(params)
+      uri = URI(return_address)
+      uri.query = CGI.parse(uri.query.to_s)
+        .symbolize_keys
+        .transform_values { |v| v.one? ? v.first : v }
+        .merge(params)
+        .to_query
+      uri.to_s
     end
   end
 end
