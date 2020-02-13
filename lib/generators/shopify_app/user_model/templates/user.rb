@@ -1,5 +1,5 @@
 class User < ActiveRecord::Base
-  include ShopifyApp::UserSessionStorage
+  include ShopifyApp::SessionStorage
 
   def api_version
     ShopifyApp.configuration.api_version

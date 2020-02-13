@@ -1,5 +1,5 @@
 class Shop < ActiveRecord::Base
-  include ShopifyApp::ShopSessionStorage
+  include ShopifyApp::SessionStorage
 
   def api_version
     ShopifyApp.configuration.api_version

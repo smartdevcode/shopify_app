@@ -3,7 +3,6 @@ module ShopifyApp
     include ShopifyApp::LoginProtection
 
     layout false, only: :new
-
     after_action only: [:new, :create] do |controller|
       controller.response.headers.except!('X-Frame-Options')
     end
@@ -17,7 +16,7 @@ module ShopifyApp
     end
 
     def enable_cookies
-      return unless validate_shop_presence
+      return unless validate_shop
 
       render(:enable_cookies, layout: false, locals: {
         does_not_have_storage_access_url: top_level_interaction_path(
@@ -31,11 +30,11 @@ module ShopifyApp
 
     def top_level_interaction
       @url = login_url_with_optional_shop(top_level: true)
-      validate_shop_presence
+      validate_shop
     end
 
     def granted_storage_access
-      return unless validate_shop_presence
+      return unless validate_shop
 
       session['shopify.granted_storage_access'] = true
 
@@ -56,8 +55,6 @@ module ShopifyApp
       session['shopify.omniauth_params'] = { shop: sanitized_shop_name }
 
       session[:return_to] = params[:return_to] if params[:return_to]
-
-      set_user_tokens_option
 
       if user_agent_can_partition_cookies
         authenticate_with_partitioning
@@ -86,27 +83,7 @@ module ShopifyApp
       end
     end
 
-    def set_user_tokens_option
-      if shop_session.blank?
-        session[:user_tokens] = false
-        return
-      end
-
-      session[:user_tokens] = ShopifyApp::SessionRepository.user_storage.present?
-
-      ShopifyAPI::Session.temp(
-        domain: shop_session.domain,
-        token: shop_session.token,
-        api_version: shop_session.api_version
-      ) do
-        ShopifyAPI::Metafield.find(:token_validity_bogus_check)
-      end
-    rescue ActiveResource::UnauthorizedAccess
-      session[:user_tokens] = false
-    rescue StandardError
-    end
-
-    def validate_shop_presence
+    def validate_shop
       @shop = sanitized_shop_name
       unless @shop
         render_invalid_shop_error
