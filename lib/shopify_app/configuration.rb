@@ -5,7 +5,7 @@ module ShopifyApp
     # for the app in your Shopify Partners page. Change your settings in
     # `config/initializers/shopify_app.rb`
     attr_accessor :application_name
-    attr_accessor :api_key
+    attr_writer   :api_key
     attr_accessor :secret
     attr_accessor :old_secret
     attr_accessor :scope
@@ -14,8 +14,9 @@ module ShopifyApp
     attr_accessor :webhooks
     attr_accessor :scripttags
     attr_accessor :after_authenticate_job
-    attr_reader :shop_session_repository
-    attr_reader :user_session_repository
+    attr_reader :session_repository
+    attr_accessor :per_user_tokens
+    alias_method :per_user_tokens?, :per_user_tokens
     attr_accessor :api_version
 
     # customise urls
@@ -43,6 +44,7 @@ module ShopifyApp
       @myshopify_domain = 'myshopify.com'
       @scripttags_manager_queue_name = Rails.application.config.active_job.queue_name
       @webhooks_manager_queue_name = Rails.application.config.active_job.queue_name
+      @per_user_tokens = false
       @disable_webpacker = ENV['SHOPIFY_APP_DISABLE_WEBPACKER'].present?
     end
 
@@ -50,14 +52,9 @@ module ShopifyApp
       @login_url || File.join(@root_url, 'login')
     end
 
-    def user_session_repository=(klass)
-      @user_session_repository = klass
-      ShopifyApp::SessionRepository.user_storage = klass
-    end
-
-    def shop_session_repository=(klass)
-      @shop_session_repository = klass
-      ShopifyApp::SessionRepository.shop_storage = klass
+    def session_repository=(klass)
+      @session_repository = klass
+      ShopifyApp::SessionRepository.storage = klass
     end
 
     def has_webhooks?
@@ -66,6 +63,11 @@ module ShopifyApp
 
     def has_scripttags?
       scripttags.present?
+    end
+
+    def api_key
+      raise 'API Key is required and is being returned nil. Are you loading your enviroment variables?' if @api_key.nil?
+      @api_key
     end
 
     def enable_same_site_none
