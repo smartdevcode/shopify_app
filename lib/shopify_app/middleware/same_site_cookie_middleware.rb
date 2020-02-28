@@ -12,8 +12,7 @@ module ShopifyApp
 
       if headers && headers['Set-Cookie'] &&
           !SameSiteCookieMiddleware.same_site_none_incompatible?(user_agent) &&
-          ShopifyApp.configuration.enable_same_site_none &&
-          Rack::Request.new(env).ssl?
+          ShopifyApp.configuration.enable_same_site_none
 
         set_cookies = headers['Set-Cookie']
           .split(COOKIE_SEPARATOR)
