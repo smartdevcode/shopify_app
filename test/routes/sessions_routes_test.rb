@@ -3,7 +3,7 @@ require 'test_helper'
 class SessionsRoutesTest < ActionController::TestCase
   setup do
     @routes = ShopifyApp::Engine.routes
-    ShopifyApp::SessionRepository.shop_storage = ShopifyApp::InMemoryShopSessionStore
+    ShopifyApp::SessionRepository.shop_storage = ShopifyApp::InMemorySessionStore
     ShopifyApp.configuration = nil
   end
 
