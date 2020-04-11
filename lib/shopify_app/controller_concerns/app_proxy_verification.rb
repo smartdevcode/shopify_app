@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 module ShopifyApp
   module AppProxyVerification
     extend ActiveSupport::Concern
@@ -9,7 +8,7 @@ module ShopifyApp
     end
 
     def verify_proxy_request
-      return head(:forbidden) unless query_string_valid?(request.query_string)
+      return head :forbidden unless query_string_valid?(request.query_string)
     end
 
     private
@@ -27,7 +26,7 @@ module ShopifyApp
     end
 
     def calculated_signature(query_hash_without_signature)
-      sorted_params = query_hash_without_signature.collect { |k, v| "#{k}=#{Array(v).join(',')}" }.sort.join
+      sorted_params = query_hash_without_signature.collect{|k,v| "#{k}=#{Array(v).join(',')}"}.sort.join
 
       OpenSSL::HMAC.hexdigest(
         OpenSSL::Digest.new('sha256'),

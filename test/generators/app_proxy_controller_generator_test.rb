@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 require 'test_helper'
 require 'generators/shopify_app/app_proxy_controller/app_proxy_controller_generator'
 
@@ -28,4 +27,5 @@ class AppProxyControllerGeneratorTest < Rails::Generators::TestCase
       assert "namespace :app_proxy do\n", routes
     end
   end
+
 end

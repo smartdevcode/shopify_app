@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 require 'test_helper'
 require 'generators/shopify_app/shop_model/shop_model_generator'
 
@@ -40,4 +39,5 @@ class ShopModelGeneratorTest < Rails::Generators::TestCase
       assert_match "regular_shop:", file
     end
   end
+
 end

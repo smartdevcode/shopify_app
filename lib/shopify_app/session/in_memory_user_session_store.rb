@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 module ShopifyApp
   class InMemoryUserSessionStore < InMemorySessionStore
     def self.store(session, user)
