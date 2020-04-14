@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 module ShopifyApp
   module WebhookVerification
     extend ActiveSupport::Concern
@@ -12,7 +11,7 @@ module ShopifyApp
 
     def verify_request
       data = request.raw_post
-      return head(:unauthorized) unless hmac_valid?(data)
+      return head :unauthorized unless hmac_valid?(data)
     end
 
     def hmac_valid?(data)

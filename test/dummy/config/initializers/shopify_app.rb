@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 class ShopifyAppConfigurer
   def self.call
     ShopifyApp.configure do |config|

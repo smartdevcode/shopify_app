@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 module ShopifyApp
   class WebhooksManager
     class CreationFailed < StandardError; end
@@ -32,7 +31,7 @@ module ShopifyApp
 
     def destroy_webhooks
       ShopifyAPI::Webhook.all.to_a.each do |webhook|
-        ShopifyAPI::Webhook.delete(webhook.id) if required_webhook?(webhook)
+        ShopifyAPI::Webhook.delete(webhook.id) if is_required_webhook?(webhook)
       end
 
       @current_webhooks = nil
@@ -40,8 +39,8 @@ module ShopifyApp
 
     private
 
-    def required_webhook?(webhook)
-      required_webhooks.map { |w| w[:address] }.include?(webhook.address)
+    def is_required_webhook?(webhook)
+      required_webhooks.map{ |w| w[:address] }.include? webhook.address
     end
 
     def create_webhook(attributes)

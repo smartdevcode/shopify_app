@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 require 'shopify_app/version'
 
 # deps

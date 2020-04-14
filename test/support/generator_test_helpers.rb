@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 module GeneratorTestHelpers
   TEMPLATE_PATH = File.expand_path("../../app_templates", __FILE__)
 

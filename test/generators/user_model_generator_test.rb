@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 require 'test_helper'
 require 'generators/shopify_app/user_model/user_model_generator'
 
@@ -40,4 +39,5 @@ class UserModelGeneratorTest < Rails::Generators::TestCase
       assert_match "regular_user:", file
     end
   end
+
 end

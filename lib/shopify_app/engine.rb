@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 module ShopifyApp
   class Engine < Rails::Engine
     engine_name 'shopify_app'
