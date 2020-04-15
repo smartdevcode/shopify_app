@@ -25,7 +25,7 @@ Table of Contents
 - [AppProxyVerification](#appproxyverification)
 - [Troubleshooting](#troubleshooting)
 - [Testing an embedded app outside the Shopify admin](#testing-an-embedded-app-outside-the-shopify-admin)
-- [Migration to 13.0.0](#migrating-to-1300)
+- [Migration to 13.0.0](#migrating-to-13)
 - [Questions or problems?](#questions-or-problems-)
 - [Rails 6 Compatibility](#rails-6-compatibility)
 - [Upgrading from 8.6 to 9.0.0](#upgrading-from-86-to-900)
@@ -497,9 +497,6 @@ change to how session stores work. Here are the steps to migrate to 13.x
 
 ### Changes to the @shop_session instance variable (normally in `app/controllers/*.rb`)
 - *CHANGE* if you are using shop sessions, `@shop_session` will need to be changed to `@current_shopify_session`
-
-### Changes to Rails `session`
-- *CHANGE* `session[:shopify]` is no longer set. Use `session[:user_id]` if your app uses user based tokens, or `session[:shop_id]` if your app uses shop based tokens.
 
 ### Changes to `ShopifyApp::LoginProtection`
 `ShopifyApp::LoginProtection`
