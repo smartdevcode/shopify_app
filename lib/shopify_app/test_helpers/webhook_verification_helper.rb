@@ -1,4 +1,3 @@
-# frozen_string_literal: true
 module ShopifyApp
   module TestHelpers
     module WebhookVerificationHelper
@@ -9,7 +8,7 @@ module ShopifyApp
         @request.headers['HTTP_X_SHOPIFY_HMAC_SHA256'] = valid_hmac
       end
 
-      def unauthorized_webhook_verification_headers!
+      def unauthorized_webhook_verification_headers!(params = {})
         @request.headers['HTTP_X_SHOPIFY_HMAC_SHA256'] = "invalid_hmac"
       end
     end
