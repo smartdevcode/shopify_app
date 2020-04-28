@@ -16,7 +16,7 @@ module ShopifyApp
 
     test "receives webhook and performs job" do
       send_webhook 'order_update', { foo: :bar }
-      assert_response :ok
+      assert_response :no_content
       assert_enqueued_jobs 1
     end
 
@@ -27,7 +27,7 @@ module ShopifyApp
       OrderUpdateJob.expects(:perform_later).with(job_args)
 
       send_webhook 'order_update', webhook
-      assert_response :ok
+      assert_response :no_content
     end
 
     test "returns error for webhook with no job class" do
