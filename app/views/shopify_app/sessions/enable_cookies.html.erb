@@ -14,10 +14,15 @@
       display: none;
     }
   </style>
+  <script>
+    window.apiKey = "<%= ShopifyApp.configuration.api_key %>";
+    window.shopOrigin = "https://<%= @shop %>";
+    window.returnTo = "<%= params[:return_to] %>"
+  </script>
 
   <%= javascript_include_tag('shopify_app/enable_cookies', crossorigin: 'anonymous', integrity: true) %>
 </head>
-<body data-api-key="<%= ShopifyApp.configuration.api_key %>" data-shop-origin="https://<%= @shop %>" data-redirect-url="<%= @url %>">
+<body>
   <%=
     content_tag(
       :div, nil,

@@ -132,8 +132,7 @@
 
   /* ITP 2.0 solution: handles cookie partitioning */
   StorageAccessHelper.prototype.setUpHelper = function() {
-    var shopifyData = document.body.dataset;
-    return new ITPHelper({redirectUrl: shopifyData.shopOrigin + "/admin/apps/" + shopifyData.apiKey + shopifyData.returnTo});
+    return new ITPHelper({redirectUrl: window.shopOrigin + "/admin/apps/" + window.apiKey + window.returnTo});
   }
 
   StorageAccessHelper.prototype.setCookieAndRedirect = function() {
