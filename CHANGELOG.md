@@ -1,7 +1,3 @@
-14.3.0
-------
-* Create user session if one does not exist but was expected
-
 14.2.0
 ------
 * Revert "Replace redirect calls to use App Bridge redirect functionality"
