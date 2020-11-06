@@ -11,8 +11,8 @@
     -ms-flex-align:center;
     align-items:center;
     width:100%;
-    margin:0 auto;
-    padding:2rem 0 6rem;
+    margin:2rem auto 0 auto;
+    padding:2rem 0;
     max-width:99.8rem;
   }
 
@@ -24,20 +24,31 @@
   }
 
   .Polaris-EmptyState__Section {
+    position:relative;
     display:-webkit-box;
     display:-ms-flexbox;
     display:flex;
     -webkit-box-orient:vertical;
-    -webkit-box-direction:reverse;
-    -ms-flex-direction:column-reverse;
-    flex-direction:column-reverse;
+    -webkit-box-direction:normal;
+    -ms-flex-direction:column;
+    flex-direction:column;
     -webkit-box-flex:1;
     -ms-flex:1 1 auto;
     flex:1 1 auto;
-    -webkit-box-align:center;
-    -ms-flex-align:center;
-    align-items:center;
     width:100%;
+  }
+
+  @media (min-width: 46.5em) {
+    .Polaris-EmptyState__Section {
+      left:2rem;
+      -webkit-box-orient:horizontal;
+      -webkit-box-direction:normal;
+      -ms-flex-direction:row;
+      flex-direction:row;
+      -webkit-box-align:center;
+      -ms-flex-align:center;
+      align-items:center;
+    }
   }
 
   .Polaris-EmptyState__ImageContainer,
@@ -47,7 +58,6 @@
     flex:1 1 auto;
     padding:0;
     margin:0; 
-    text-align:center;
   }
 
   @media (min-width: 46.5em) {
@@ -58,32 +68,37 @@
     }
   }
 
+  @media (max-width: 30.625em) {
+    .Polaris-EmptyState__ImageContainer,
+    .Polaris-EmptyState__DetailsContainer {
+      overflow-x:hidden;
+    }
+  }
+
   .Polaris-EmptyState__Details {
-    max-width:40rem;
-    display:-webkit-box;
-    display:-ms-flexbox;
-    display: flex;
-    -webkit-box-orient:vertical;
-    -webkit-box-direction:normal;
-    -ms-flex-direction:column;
-    flex-direction: column;
-    -webkit-box-align:center;
-    -ms-flex-align:center;
-    align-items: center;
+    position:relative;
+    z-index:10;
+    padding:0 1.6rem;
+    width:33.6rem;
+  }
+
+  @media (min-width: 30.625em) {
+    .Polaris-EmptyState__Details {
+      padding:0;
+    }
   }
 
   .Polaris-EmptyState__Content {
-    margin-top: 1.6rem;
-    font-size:1.5rem;
+    font-size:1.6rem;
     font-weight:400;
-    line-height:2rem;
-    color:#6d7175;
-    padding-bottom: .8rem;
+    line-height:2.4rem;
+    color:#637381;
   }
 
   @media (min-width: 40em) {
     .Polaris-EmptyState__Content {
-      font-size:1.4rem;
+      font-size:2rem;
+      line-height:2.8rem;
     }
   }
 
@@ -92,7 +107,23 @@
   }
 
   .Polaris-EmptyState__Image {
-    margin: 0;
-    width: auto;
+    display: none;
+  }
+
+  @media (min-width: 30.625em) {
+    .Polaris-EmptyState__Image {
+      display: block;
+      margin-left:-60%;
+      margin-top:-30%;
+      width:200%;
+    }
+  }
+
+  @media (min-width: 46.5em) {
+    .Polaris-EmptyState__Image {
+      margin-top:0;
+      margin-left:-90%;
+      width:200%;
+    } 
   }
 </style>
