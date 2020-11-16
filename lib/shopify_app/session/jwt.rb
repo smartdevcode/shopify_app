@@ -25,7 +25,7 @@ module ShopifyApp
     end
 
     def shopify_user_id
-      @payload['sub'].to_i if @payload && @payload['sub']
+      @payload && @payload['sub']
     end
 
     private
